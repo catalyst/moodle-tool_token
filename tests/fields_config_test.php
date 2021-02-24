@@ -67,7 +67,8 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $this->assertSame([
             'id' => 'id',
             'username' => 'username',
-            'email' => 'email'
+            'email' => 'email',
+            'idnumber' => 'idnumber',
         ], fields_config::MATCH_FIELDS_FROM_USER_TABLE);
 
         $this->assertSame(['text'], fields_config::SUPPORTED_TYPES_OF_PROFILE_FIELDS);
@@ -82,7 +83,8 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $expected = [
             'id' => 'id',
             'username' => 'username',
-            'email' => 'email'
+            'email' => 'email',
+            'idnumber' => 'idnumber',
         ];
         $actual = $fields->get_supported_fields();
         $this->assertSame($expected, $actual);
@@ -109,7 +111,8 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $userfields = [
             'id' => 'id',
             'username' => 'username',
-            'email' => 'email'
+            'email' => 'email',
+            'idnumber' => 'idnumber',
         ];
 
         $profilefields = [

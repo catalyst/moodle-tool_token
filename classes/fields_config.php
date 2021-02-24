@@ -42,7 +42,8 @@ class fields_config {
     const MATCH_FIELDS_FROM_USER_TABLE = [
         'id' => 'id',
         'username' => 'username',
-        'email' => 'email'
+        'email' => 'email',
+        'idnumber' => 'idnumber',
     ];
 
     /**
