@@ -25,7 +25,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
-   // TODO: Define the plugin settings page.
-   // https://docs.moodle.org/dev/Admin_settings
+if ($hassiteconfig) {
+
+    $settings = new admin_settingpage('tool_token', get_string('pluginname', 'tool_token'));
+    $ADMIN->add('tools', $settings);
+
+    $fields = new \tool_token\user_fields();
+    $supportedfileds = $fields->get_supported_fields();
+    unset($supportedfileds['id']);
+
+    $settings->add(new admin_setting_configmulticheckbox(
+        'tool_token/usermatchfields',
+        get_string('usermatchfields', 'tool_token'),
+        get_string('usermatchfields_desc', 'tool_token'),
+        [],
+        $supportedfileds
+    ));
+
 }

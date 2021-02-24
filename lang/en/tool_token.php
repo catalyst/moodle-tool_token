@@ -28,3 +28,5 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Token generator';
 $string['token:generatetoken'] = 'Generate Token';
 $string['privacy:metadata'] = 'The Token generator plugin does not store any personal data.';
+$string['usermatchfields'] = 'Enabled user match fields';
+$string['usermatchfields_desc'] = 'These fields could be used in a web service call to match users in Moodle. Note: id is always enabled to have at least one field to match by.';
