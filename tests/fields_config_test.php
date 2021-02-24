@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for user_fields class.
+ * Tests for fields_config class.
  *
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_token\user_fields;
+use tool_token\fields_config;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-class tool_token_user_fields_testcase extends advanced_testcase {
+class tool_token_fields_config_testcase extends advanced_testcase {
 
     /**
      * A helper function to create a custom profile field.
@@ -68,17 +68,17 @@ class tool_token_user_fields_testcase extends advanced_testcase {
             'id' => 'id',
             'username' => 'username',
             'email' => 'email'
-        ], user_fields::MATCH_FIELDS_FROM_USER_TABLE);
+        ], fields_config::MATCH_FIELDS_FROM_USER_TABLE);
 
-        $this->assertSame(['text'], user_fields::SUPPORTED_TYPES_OF_PROFILE_FIELDS);
-        $this->assertSame('profile_', user_fields::PROFILE_FIELD_PREFIX);
+        $this->assertSame(['text'], fields_config::SUPPORTED_TYPES_OF_PROFILE_FIELDS);
+        $this->assertSame('profile_', fields_config::PROFILE_FIELD_PREFIX);
     }
 
     /**
      * Test values for user match fields when no profile fields in the system.
      */
     public function test_get_supported_fields_without_profile_fields() {
-        $fields = new user_fields();
+        $fields = new fields_config();
         $expected = [
             'id' => 'id',
             'username' => 'username',
@@ -94,7 +94,7 @@ class tool_token_user_fields_testcase extends advanced_testcase {
     public function test_get_supported_fields_with_profile_fields() {
         $this->resetAfterTest();
 
-        $fields = new user_fields();
+        $fields = new fields_config();
 
         // Create bunch of profile fields.
         $this->add_user_profile_field('text1', 'text', true);
@@ -145,15 +145,15 @@ class tool_token_user_fields_testcase extends advanced_testcase {
     public function test_get_enabled_fields(string $configvalue, array $expected) {
         $this->resetAfterTest();
 
-        $fields = new user_fields();
+        $fieldsconfig = new fields_config();
 
         // ID must be presented all the time.
-        $this->assertTrue(is_array($fields->get_enabled_fields()));
-        $this->assertEquals(['id'], $fields->get_enabled_fields());
+        $this->assertTrue(is_array($fieldsconfig->get_enabled_fields()));
+        $this->assertEquals(['id'], $fieldsconfig->get_enabled_fields());
 
         set_config('usermatchfields', $configvalue, 'tool_token');
-        $this->assertTrue(is_array($fields->get_enabled_fields()));
-        $this->assertEquals($expected, $fields->get_enabled_fields());
+        $this->assertTrue(is_array($fieldsconfig->get_enabled_fields()));
+        $this->assertEquals($expected, $fieldsconfig->get_enabled_fields());
     }
 }
 

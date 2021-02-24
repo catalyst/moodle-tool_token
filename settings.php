@@ -30,8 +30,8 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_token', get_string('pluginname', 'tool_token'));
     $ADMIN->add('tools', $settings);
 
-    $fields = new \tool_token\user_fields();
-    $supportedfileds = $fields->get_supported_fields();
+    $fieldsconfig = new \tool_token\fields_config();
+    $supportedfileds = $fieldsconfig->get_supported_fields();
     unset($supportedfileds['id']);
 
     $settings->add(new admin_setting_configmulticheckbox(

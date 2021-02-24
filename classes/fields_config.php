@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The class responsible for managing user fields.
+ * The class responsible for managing user fields config.
  *
  * @package     tool_token
  * @copyright   2021 Catalyst IT
@@ -29,12 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
 /**
- * The class responsible for managing user fields.
+ * The class responsible for managing user fields config.
  *
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_fields {
+class fields_config {
 
     /**
      * A list of user matching fields from {user} table
