@@ -18,7 +18,7 @@
  * Plugin event classes are defined here.
  *
  * @package     tool_token
- * @copyright   2020 Catalyst IT
+ * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * The token_generated event class.
  *
  * @package    tool_token
- * @copyright  2020 Catalyst IT
+ * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class token_generated extends \core\event\base {

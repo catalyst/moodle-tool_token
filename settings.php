@@ -19,7 +19,7 @@
  *
  * @package     tool_token
  * @category    admin
- * @copyright   2020 Catalyst IT
+ * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
