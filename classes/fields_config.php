@@ -79,7 +79,7 @@ class fields_config {
 
             foreach ($customfieldoptions as $key => $value) {
                 // Modify keys to mark these fields as custom profile fields.
-                $customfieldoptions[$this->build_profile_field_setting_value($key)] = $value;
+                $customfieldoptions[$this->prefix_custom_profile_field($key)] = $value;
                 unset($customfieldoptions[$key]);
             }
 
@@ -115,13 +115,50 @@ class fields_config {
     }
 
     /**
-     * Build setting value for a  user profile field.
+     * Check if provided field name is considerred as profile field.
      *
-     * @param string $shortname Short name of the profile field.'
+     * @param string $fieldname User field name.
+     * @return bool
+     */
+    public function is_custom_profile_field(string $fieldname) : bool {
+        // Basically all fields should be profile except MATCH_FIELDS_FROM_USER_TABLE.
+        return !in_array($fieldname, self::MATCH_FIELDS_FROM_USER_TABLE);
+    }
+
+    /**
+     * Check is the field is enabled.
+     *
+     * @param string $fieldname User field name.
+     *
+     * @return bool
+     */
+    public function is_field_enabled(string $fieldname) : bool {
+        return in_array($this->normalise_field($fieldname), $this->get_enabled_fields());
+    }
+
+    /**
+     * Normalise user match field.
+     *
+     * @param string $fieldname User match field shortname.
      *
      * @return string
      */
-    protected function build_profile_field_setting_value(string $shortname) : string {
+    protected function normalise_field(string $fieldname) : string {
+        if ($this->is_custom_profile_field($fieldname)) {
+            $fieldname = $this->prefix_custom_profile_field($fieldname);
+        }
+
+        return $fieldname;
+    }
+
+    /**
+     * Build setting value for a  user profile field.
+     *
+     * @param string $shortname Short name of the profile field.
+     *
+     * @return string
+     */
+    protected function prefix_custom_profile_field(string $shortname) : string {
         return self::PROFILE_FIELD_PREFIX . $shortname;
     }
 

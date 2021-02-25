@@ -158,5 +158,37 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $this->assertTrue(is_array($fieldsconfig->get_enabled_fields()));
         $this->assertEquals($expected, $fieldsconfig->get_enabled_fields());
     }
+
+    /**
+     * Test we can distinguish custom profile fields.
+     */
+    public function test_is_custom_profile_field() {
+        $fieldsconfig = new fields_config();
+
+        foreach (fields_config::MATCH_FIELDS_FROM_USER_TABLE as $fieldname) {
+            $this->assertFalse($fieldsconfig->is_custom_profile_field($fieldname));
+        }
+
+        $this->assertTrue($fieldsconfig->is_custom_profile_field('random string'));
+    }
+
+    /**
+     * Test is_field_enabled method.
+     */
+    public function test_is_field_enabled() {
+        $this->resetAfterTest();
+
+        set_config('usermatchfields', 'username,idnumber,profile_field1,field2', 'tool_token');
+
+        $fieldsconfig = new fields_config();
+
+        $this->assertTrue($fieldsconfig->is_field_enabled('id'));
+        $this->assertTrue($fieldsconfig->is_field_enabled('username'));
+        $this->assertFalse($fieldsconfig->is_field_enabled('email'));
+        $this->assertTrue($fieldsconfig->is_field_enabled('idnumber'));
+        $this->assertTrue($fieldsconfig->is_field_enabled('field1'));
+        $this->assertFalse($fieldsconfig->is_field_enabled('field2'));
+        $this->assertFalse($fieldsconfig->is_field_enabled('ramdom string'));
+    }
 }
 
