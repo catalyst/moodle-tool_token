@@ -30,16 +30,33 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_token', get_string('pluginname', 'tool_token'));
     $ADMIN->add('tools', $settings);
 
+    // Enabled user matching fields.
     $fieldsconfig = new \tool_token\fields_config();
-    $supportedfileds = $fieldsconfig->get_supported_fields();
-    unset($supportedfileds['id']);
+    $options = $fieldsconfig->get_supported_fields();
+    unset($options['id']);
 
     $settings->add(new admin_setting_configmulticheckbox(
         'tool_token/usermatchfields',
         get_string('usermatchfields', 'tool_token'),
         get_string('usermatchfields_desc', 'tool_token'),
         [],
-        $supportedfileds
+        $options
+    ));
+
+    // Enabled supported services.
+    $servicesconfig = new \tool_token\services_config();
+    $supportedservicess = $servicesconfig->get_supported_services();
+    $options = [];
+    foreach ($servicesconfig->get_supported_services() as $service) {
+        $options[$service->shortname] = $service->name . ' (' . $service->shortname . ')';
+    }
+
+    $settings->add(new admin_setting_configmulticheckbox(
+        'tool_token/services',
+        get_string('services', 'tool_token'),
+        get_string('services_desc', 'tool_token'),
+        [],
+        $options
     ));
 
 }
