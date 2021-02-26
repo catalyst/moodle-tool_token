@@ -41,7 +41,7 @@ class tool_token_services_config_testcase extends advanced_testcase {
 
         $this->assertIsArray($servicesconfig->get_supported_services());
 
-        foreach ($servicesconfig->get_supported_services() as $service) {
+        foreach ($servicesconfig->get_supported_services() as $shortname => $service) {
             $this->assertObjectHasAttribute('id', $service);
             $this->assertObjectHasAttribute('name', $service);
             $this->assertObjectHasAttribute('enabled', $service);
@@ -52,7 +52,8 @@ class tool_token_services_config_testcase extends advanced_testcase {
             $this->assertObjectHasAttribute('downloadfiles', $service);
             $this->assertObjectHasAttribute('uploadfiles', $service);
             // We support only services that have shortnames.
-            $this->assertNotNull($service->shortname);
+            $this->assertNotEmpty($service->shortname);
+            $this->assertSame($service->shortname, $shortname);
         }
 
         $totalsupported = count($servicesconfig->get_supported_services());
@@ -72,13 +73,19 @@ class tool_token_services_config_testcase extends advanced_testcase {
         // Insert one service with shortname.
         $DB->insert_record('external_services', $service);
 
-        // Insert another one without shortname.
+        // Insert another one with null shortname.
         $service->shortname = null;
         $service->name = 'Tool Token Test WS with NULL shortname';
         $DB->insert_record('external_services', $service);
 
+        // Insert another one with empty shortname.
+        $service->shortname = '';
+        $service->name = 'Tool Token Test WS with emtoy shortname';
+        $DB->insert_record('external_services', $service);
+
         // Make sure that the total number of supported services changed by 1.
         $this->assertCount($totalsupported + 1, $servicesconfig->get_supported_services());
+        $this->assertArrayHasKey('fake WS', $servicesconfig->get_supported_services());
     }
 
     /**
@@ -134,5 +141,39 @@ class tool_token_services_config_testcase extends advanced_testcase {
         $this->assertTrue($servicesconfig->is_service_enabled('   service4'));
         $this->assertFalse($servicesconfig->is_service_enabled('service5'));
         $this->assertFalse($servicesconfig->is_service_enabled('random string'));
+    }
+
+    /**
+     * Test get service by shortname.
+     */
+    public function test_get_service_by_shortname() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $servicesconfig = new services_config();
+
+        $service = (object) [
+            'name' => 'Tool Token Test WS',
+            'enabled' => 1,
+            'requiredcapability' => '',
+            'restrictedusers' => 0,
+            'component' => null,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'shortname' => 'fake WS',
+            'downloadfiles' => 0,
+            'uploadfiles' => 0,
+        ];
+
+        // Insert one service with shortname.
+        $DB->insert_record('external_services', $service);
+
+        // Insert another one without shortname.
+        $service->shortname = '';
+        $service->name = 'Tool Token Test WS with empty shortname';
+        $DB->insert_record('external_services', $service);
+
+        $this->assertNull($servicesconfig->get_service_by_shortname(''));
+        $this->assertSame('Tool Token Test WS', $servicesconfig->get_service_by_shortname('fake WS')->name);
     }
 }

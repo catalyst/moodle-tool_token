@@ -41,7 +41,13 @@ class services_config {
     public function get_supported_services() : array {
         global $DB;
 
-        return $DB->get_records_select('external_services', 'shortname IS NOT NULL', null, 'name');
+        return $DB->get_records_select(
+            'external_services',
+            "shortname IS NOT NULL AND shortname <> ?",
+            [''],
+            'name',
+            'shortname, *'
+        );
     }
 
     /**
@@ -56,7 +62,6 @@ class services_config {
 
         if (!empty($config)) {
             $services = explode(',', $config);
-
             // Remove all empty strings.
             $result = array_filter($services, function($value) {
                 return trim($value) !== '';
@@ -69,11 +74,21 @@ class services_config {
     /**
      * Check if provided service is enabled for generating a token.
      *
-     * @param $shortname
+     * @param string $shortname Service shortname.
      * @return bool
      */
-    public function is_service_enabled($shortname) : bool {
+    public function is_service_enabled(string $shortname) : bool {
         return in_array($shortname, $this->get_enabled_services());
+    }
+
+    /**
+     * Return instance of supported service.
+     *
+     * @param string $shortname Service shortname.
+     * @return \stdClass|null
+     */
+    public function get_service_by_shortname(string $shortname) : ?\stdClass {
+        return $this->get_supported_services()[$shortname] ?? null;
     }
 
 }
