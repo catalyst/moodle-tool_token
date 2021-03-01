@@ -22,8 +22,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_token\fields_config;
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -31,6 +29,27 @@ global $CFG;
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
 class tool_token_token_api_testcase extends advanced_testcase {
+
+    /**
+     * Test  user 1.
+     * @var \stdClass
+     */
+    protected $user1;
+
+    /**
+     * Test  user 2.
+     * @var \stdClass
+     */
+    protected $user2;
+
+    /**
+     * Initial set up which runs before each test method.
+     */
+    public function setUp() {
+        parent::setUp();
+
+        $this->resetAfterTest();
+    }
 
     /**
      * A helper function to create a new service.
@@ -85,14 +104,29 @@ class tool_token_token_api_testcase extends advanced_testcase {
     }
 
     /**
+     * Set up users and fields.
+     */
+    protected function set_up_users() {
+        $field1 = $this->add_user_profile_field('field1', 'text', true);
+        $field2 = $this->add_user_profile_field('field2', 'text', true);
+
+        $this->user1 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $this->user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
+        profile_save_data((object)['id' => $this->user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
+
+        $this->user2 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $this->user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
+        profile_save_data((object)['id' => $this->user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+    }
+
+    /**
      * Test getting a token without required permissions.
      */
     public function test_get_token_without_permissions() {
-        $this->resetAfterTest();
-
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
+        // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
 
         $token = external_api::call_external_function('tool_token_get_token', [
@@ -114,10 +148,8 @@ class tool_token_token_api_testcase extends advanced_testcase {
     /**
      * Test get token.
      */
-    public function test_get_token() {
+    public function test_get_token_with_by_user_with_permissions() {
         global $DB;
-
-        $this->resetAfterTest();
 
         $roleid = $this->getDataGenerator()->create_role();
         assign_capability('tool/token:generatetoken', CAP_ALLOW, $roleid, context_system::instance());
@@ -128,29 +160,21 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->setUser($user);
 
         $serviceid = $this->create_service();
-        $field1 = $this->add_user_profile_field('field1', 'text', true);
-        $field2 = $this->add_user_profile_field('field2', 'text', true);
-
-        $user1 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
-
-        $user2 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+        $this->set_up_users();
 
         set_config('usermatchfields', 'username,profile_field1,profile_field2', 'tool_token');
         set_config('services', 'fake WS', 'tool_token');
 
+        // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
 
         $token1 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
-            'idvalue' => $user1->id,
+            'idvalue' => $this->user1->id,
             'service' => 'fake WS'
         ]);
 
-        $expected = $DB->get_record('external_tokens', ['userid' => $user1->id, 'externalserviceid' => $serviceid]);
+        $expected = $DB->get_record('external_tokens', ['userid' => $this->user1->id, 'externalserviceid' => $serviceid]);
 
         $this->assertIsArray($token1);
         $this->assertArrayHasKey('error', $token1);
@@ -159,12 +183,12 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertIsArray($token1['data']);
         $this->assertArrayHasKey('userid', $token1['data']);
         $this->assertArrayHasKey('token', $token1['data']);
-        $this->assertEquals($user1->id, $token1['data']['userid']);
+        $this->assertEquals($this->user1->id, $token1['data']['userid']);
         $this->assertSame($expected->token, $token1['data']['token']);
 
         $token2 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'username',
-            'idvalue' => $user1->username,
+            'idvalue' => $this->user1->username,
             'service' => 'fake WS'
         ]);
 
@@ -182,9 +206,9 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test trying to get a token for not existing user.
      */
     public function test_get_token_for_not_existing_user() {
-        $this->resetAfterTest();
         $this->setAdminUser();
 
+        // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
 
         $token = external_api::call_external_function('tool_token_get_token', [
@@ -205,25 +229,14 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test get token by not enabled field.
      */
     public function test_get_token_for_by_not_enabled_field() {
-        $this->resetAfterTest();
         $this->setAdminUser();
-
-        $serviceid = $this->create_service();
-
-        $field1 = $this->add_user_profile_field('field1', 'text', true);
-        $field2 = $this->add_user_profile_field('field2', 'text', true);
-
-        $user1 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
-
-        $user2 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+        $this->create_service();
+        $this->set_up_users();
 
         set_config('usermatchfields', 'username,profile_field1', 'tool_token');
         set_config('services', 'fake WS', 'tool_token');
 
+        // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
 
         $token = external_api::call_external_function('tool_token_get_token', [
@@ -244,31 +257,22 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test getting a token by incorrect service.
      */
     public function test_get_token_for_incorrect_service() {
-        $this->resetAfterTest();
         $this->setAdminUser();
 
-        $serviceid = $this->create_service();
+        $this->create_service();
 
-        $field1 = $this->add_user_profile_field('field1', 'text', true);
-        $field2 = $this->add_user_profile_field('field2', 'text', true);
-
-        $user1 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
-        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
-
-        $user2 = $this->getDataGenerator()->create_user();
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
-        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+        $this->set_up_users();
 
         set_config('usermatchfields', 'username,profile_field1', 'tool_token');
         set_config('services', '', 'tool_token');
 
+        // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
 
         // Not enabled service.
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
-            'idvalue' => $user1->id,
+            'idvalue' => $this->user1->id,
             'service' => 'fake WS'
         ]);
         $this->assertIsArray($token);
@@ -281,7 +285,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         // Not existing service.
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
-            'idvalue' => $user1->id,
+            'idvalue' => $this->user1->id,
             'service' => 'Not Existing'
         ]);
         $this->assertIsArray($token);
