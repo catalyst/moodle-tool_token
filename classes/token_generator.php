@@ -64,7 +64,7 @@ class token_generator {
             throw new \moodle_exception('servicenotavailable', 'webservice');
         }
 
-        if (!$service = $this->servicesconfig->get_service_by_shortname($serviceshortname)) {
+        if (is_null($service = $this->servicesconfig->get_service_by_shortname($serviceshortname))) {
             throw new \moodle_exception('servicenotavailable', 'webservice');
         }
 
