@@ -86,7 +86,7 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         $extractor = new user_extractor($this->fieldsconfig);
 
         $this->expectException('tool_token\incorrect_field_exception');
-        $this->expectExceptionMessage('Field "disabled" is not enabled for fetching users');
+        $this->expectExceptionMessage('Field is not enabled for fetching users (Field: "disabled")');
 
         $extractor->get_user('disabled', 'test');
     }

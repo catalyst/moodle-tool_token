@@ -111,7 +111,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $tokengenerator = new token_generator($this->servicesconfig);
 
         $this->expectException('moodle_exception');
-        $this->expectExceptionMessage('Web service is not available. (It doesn\'t exist or might be disabled.)');
+        $this->expectExceptionMessage('Service is not available! (fake WS)');
         $tokengenerator->generate($user->id, 'fake WS');
     }
 
@@ -137,7 +137,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $tokengenerator = new token_generator($this->servicesconfig);
 
         $this->expectException('moodle_exception');
-        $this->expectExceptionMessage('Web service is not available. (It doesn\'t exist or might be disabled.)');
+        $this->expectExceptionMessage('Service is not available! (fake WS)');
         $tokengenerator->generate($user->id, 'fake WS');
     }
 

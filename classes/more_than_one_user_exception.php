@@ -33,5 +33,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class more_than_one_user_exception extends \moodle_exception {
+    /**
+     * Constructor.
+     */
+    public function __construct() {
+        parent::__construct('error:morethanoneuser', 'tool_token', '', '', null);
+    }
 
 }

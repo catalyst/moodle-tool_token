@@ -60,7 +60,7 @@ class user_extractor {
         global $DB;
 
         if (!$this->fieldscofnig->is_field_enabled($fieldname)) {
-            throw new incorrect_field_exception('Field "' . $fieldname . '" is not enabled for fetching users');
+            throw new incorrect_field_exception($fieldname);
         }
 
         $user = null;
@@ -87,7 +87,7 @@ class user_extractor {
 
         if ($result = $DB->get_records_sql($sql, $params)) {
             if (count($result) > 1) {
-                throw new more_than_one_user_exception('More than one user found.');
+                throw new more_than_one_user_exception();
             }
             $user = reset($result);
             profile_load_custom_fields($user);

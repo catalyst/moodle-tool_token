@@ -63,11 +63,11 @@ class token_generator {
         require_capability('tool/token:generatetoken', \context_user::instance($userid));
 
         if (!$this->servicesconfig->is_service_enabled($serviceshortname)) {
-            throw new \moodle_exception('servicenotavailable', 'webservice');
+            throw new \moodle_exception('error:servicenotavailable', 'tool_token', '', null, $serviceshortname);
         }
 
         if (is_null($service = $this->servicesconfig->get_service_by_shortname($serviceshortname))) {
-            throw new \moodle_exception('servicenotavailable', 'webservice');
+            throw new \moodle_exception('error:servicenotavailable', 'tool_token', '', null, $serviceshortname);
         }
 
         // Check if a token has already been created for this user and this service.

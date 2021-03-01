@@ -34,4 +34,13 @@ defined('MOODLE_INTERNAL') || die();
  */
 class incorrect_field_exception extends \moodle_exception {
 
+    /**
+     * Constructor.
+     *
+     * @param string $fieldname Incorrect filed name.
+     */
+    public function __construct(string $fieldname) {
+        parent::__construct('error:incorrectfield', 'tool_token', '', null, 'Field: "' . $fieldname . '"');
+    }
+
 }
