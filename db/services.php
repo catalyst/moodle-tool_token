@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * List of web services.
  *
  * @package     tool_token
  * @copyright   2021 Catalyst IT
@@ -24,8 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_token';
-$plugin->release = '0.1.0';
-$plugin->version = 2021022401;
-$plugin->requires = 2020061500;
-$plugin->maturity = MATURITY_STABLE;
+$functions = [
+    'tool_token_get_token' => [
+        'classname'       => 'tool_token\external\token_api',
+        'methodname'      => 'get_token',
+        'description'     => 'Get a token for specific user and service.',
+        'type'            => 'write',
+        'capabilities'    => 'tool/token:generatetoken',
+         'ajax'            => false,
+    ],
+];
