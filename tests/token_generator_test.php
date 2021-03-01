@@ -143,6 +143,8 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
     /**
      * Simple test of generating a token.
+     *
+     * TODO: add more tests for all scenarios.
      */
     public function test_generate_token() {
         global $DB;
@@ -155,13 +157,19 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $serviceid = $this->create_service();
 
         $tokengenerator = new token_generator($this->servicesconfig);
-        $token = $tokengenerator->generate($user->id, 'fake WS');
+        $token1 = $tokengenerator->generate($user->id, 'fake WS');
 
-        $actual = $DB->get_record('external_tokens', ['token' => $token]);
+        $actual = $DB->get_record('external_tokens', ['token' => $token1]);
 
         $this->assertEquals($user->id, $actual->userid);
         $this->assertEquals($serviceid, $actual->externalserviceid);
         $this->assertEquals(EXTERNAL_TOKEN_PERMANENT, $actual->tokentype);
+
+        $token2 = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertSame($token1, $token2);
+
+        $token3 = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertSame($token1, $token3);
     }
 
 }

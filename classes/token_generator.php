@@ -58,6 +58,8 @@ class token_generator {
      * @return string
      */
     public function generate(int $userid, string $serviceshortname) : string {
+        global $DB;
+
         require_capability('tool/token:generatetoken', \context_user::instance($userid));
 
         if (!$this->servicesconfig->is_service_enabled($serviceshortname)) {
@@ -68,8 +70,52 @@ class token_generator {
             throw new \moodle_exception('servicenotavailable', 'webservice');
         }
 
-        // TODO: fire event that token was generated.
-        return external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, \context_system::instance());
+        // Check if a token has already been created for this user and this service.
+        $conditions = [
+            'userid' => $userid,
+            'externalserviceid' => $service->id,
+            'tokentype' => EXTERNAL_TOKEN_PERMANENT
+        ];
+
+        $tokens = $DB->get_records('external_tokens', $conditions, 'timecreated ASC');
+
+        // A bit of sanity checks.
+        foreach ($tokens as $key => $token) {
+            // Checks related to a specific token. (script execution continue).
+            $unsettoken = false;
+            // If sid is set then there must be a valid associated session no matter the token type.
+            if (!empty($token->sid)) {
+                if (!\core\session\manager::session_exists($token->sid)) {
+                    // This token will never be valid anymore, delete it.
+                    $DB->delete_records('external_tokens', array('sid' => $token->sid));
+                    $unsettoken = true;
+                }
+            }
+
+            // Remove token is not valid anymore.
+            if (!empty($token->validuntil) and $token->validuntil < time()) {
+                $DB->delete_records('external_tokens', array('token' => $token->token, 'tokentype' => EXTERNAL_TOKEN_PERMANENT));
+                $unsettoken = true;
+            }
+
+            // Remove token if its ip not in whitelist.
+            if (isset($token->iprestriction) and !address_in_subnet(getremoteaddr(), $token->iprestriction)) {
+                $unsettoken = true;
+            }
+
+            if ($unsettoken) {
+                unset($tokens[$key]);
+            }
+        }
+
+        // If some valid tokens exist then use the most recent.
+        if (count($tokens) > 0) {
+            $token = array_pop($tokens)->token;
+        } else {
+            $token = external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, \context_system::instance());
+        }
+
+        return $token;
     }
 
 }
