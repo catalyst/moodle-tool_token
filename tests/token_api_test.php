@@ -85,13 +85,47 @@ class tool_token_token_api_testcase extends advanced_testcase {
     }
 
     /**
+     * Test getting a token without required permissions.
+     */
+    public function test_get_token_without_permissions() {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $_POST['sesskey'] = sesskey();
+
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'id',
+            'idvalue' => 2,
+            'service' => 'fake WS'
+        ]);
+
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame(
+            'Sorry, but you do not currently have permissions to do that (Generate Token).',
+            $token['exception']->message
+        );
+    }
+
+    /**
      * Test get token.
      */
     public function test_get_token() {
         global $DB;
 
         $this->resetAfterTest();
-        $this->setAdminUser();
+
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/token:generatetoken', CAP_ALLOW, $roleid, context_system::instance());
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->role_assign($roleid, $user->id, context_system::instance()->id);
+
+        $this->setUser($user);
 
         $serviceid = $this->create_service();
         $field1 = $this->add_user_profile_field('field1', 'text', true);
@@ -142,6 +176,120 @@ class tool_token_token_api_testcase extends advanced_testcase {
 
         $this->assertSame($token1, $token2);
         $this->assertSame($token1, $token3);
+    }
+
+    /**
+     * Test trying to get a token for not existing user.
+     */
+    public function test_get_token_for_not_existing_user() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $_POST['sesskey'] = sesskey();
+
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'id',
+            'idvalue' => 777777,
+            'service' => 'fake WS'
+        ]);
+
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame('Invalid parameter value detected', $token['exception']->message);
+        $this->assertContains('User not found!', $token['exception']->debuginfo);
+    }
+
+    /**
+     * Test get token by not enabled field.
+     */
+    public function test_get_token_for_by_not_enabled_field() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $serviceid = $this->create_service();
+
+        $field1 = $this->add_user_profile_field('field1', 'text', true);
+        $field2 = $this->add_user_profile_field('field2', 'text', true);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
+        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
+
+        $user2 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
+        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+
+        set_config('usermatchfields', 'username,profile_field1', 'tool_token');
+        set_config('services', 'fake WS', 'tool_token');
+
+        $_POST['sesskey'] = sesskey();
+
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'field2',
+            'idvalue' => 'User 1 Field 2',
+            'service' => 'fake WS'
+        ]);
+
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame('Field is not enabled for fetching users', $token['exception']->message);
+        $this->assertContains('Field: "field2"', $token['exception']->debuginfo);
+    }
+
+    /**
+     * Test getting a token by incorrect service.
+     */
+    public function test_get_token_for_incorrect_service() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $serviceid = $this->create_service();
+
+        $field1 = $this->add_user_profile_field('field1', 'text', true);
+        $field2 = $this->add_user_profile_field('field2', 'text', true);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field1->shortname => 'User 1 Field 1']);
+        profile_save_data((object)['id' => $user1->id, 'profile_field_' . $field2->shortname => 'User 1 Field 2']);
+
+        $user2 = $this->getDataGenerator()->create_user();
+        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field1->shortname => 'User 2 Field 1']);
+        profile_save_data((object)['id' => $user2->id, 'profile_field_' . $field2->shortname => 'User 2 Field 2']);
+
+        set_config('usermatchfields', 'username,profile_field1', 'tool_token');
+        set_config('services', '', 'tool_token');
+
+        $_POST['sesskey'] = sesskey();
+
+        // Not enabled service.
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'id',
+            'idvalue' => $user1->id,
+            'service' => 'fake WS'
+        ]);
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame('Service is not available!', $token['exception']->message);
+        $this->assertContains('fake WS', $token['exception']->debuginfo);
+
+        // Not existing service.
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'id',
+            'idvalue' => $user1->id,
+            'service' => 'Not Existing'
+        ]);
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame('Service is not available!', $token['exception']->message);
+        $this->assertContains('Not Existing', $token['exception']->debuginfo);
     }
 
 }
