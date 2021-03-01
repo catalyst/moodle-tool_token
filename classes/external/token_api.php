@@ -86,9 +86,9 @@ class token_api extends external_api {
      */
     public static function get_token_parameters() : external_function_parameters {
         return new external_function_parameters([
-            'idtype' => new external_value(PARAM_ALPHAEXT, 'Type of id with which to fetch a user.'), // TODO: get a list of enabled idtypes from config.
-            'idvalue' => new external_value(PARAM_RAW, 'Value of id with which to fetch a user.'),
-            'service' => new external_value(PARAM_ALPHAEXT, 'Service shortname to get a token for.'), // TODO: get a list of enabled services form config.
+            'idtype' => new external_value(PARAM_TEXT, 'Type of id with which to fetch a user.'),
+            'idvalue' => new external_value(PARAM_TEXT, 'Value of id with which to fetch a user.'),
+            'service' => new external_value(PARAM_TEXT, 'Service shortname to get a token for.'),
         ]);
     }
 
@@ -97,7 +97,7 @@ class token_api extends external_api {
      *
      * @return external_single_structure
      */
-    public static function get_token_parameters_returns() : external_single_structure {
+    public static function get_token_returns() : external_single_structure {
         return new external_single_structure([
             'userid' => new external_value(PARAM_INT, 'Internal Moodle ID of the found user.', VALUE_OPTIONAL),
             'token' => new external_value(PARAM_RAW, 'Generated token', VALUE_OPTIONAL),
