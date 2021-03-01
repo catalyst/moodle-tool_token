@@ -34,3 +34,13 @@ $functions = [
          'ajax'            => false,
     ],
 ];
+
+$services = [
+    'Token Generator Service' => [
+        'functions' => array_keys($functions),
+        'requiredcapability' => 'tool/token:generatetoken',
+        'restrictedusers' => 1, // An administrator must link a user to this service.
+        'enabled' => 0,
+        'shortname' => 'tool_token_token_generator_service',
+    ]
+];
