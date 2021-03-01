@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = [
 
     'tool/token:generatetoken' => [
-        'riskbitmask' => RISK_MANAGETRUST|RISK_PERSONAL,
+        'riskbitmask' => RISK_MANAGETRUST | RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_USER,
         'archetypes' => [
