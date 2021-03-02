@@ -26,12 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     'tool_token_get_token' => [
-        'classname'       => 'tool_token\external\token_api',
-        'methodname'      => 'get_token',
-        'description'     => 'Get a token for specific user and service.',
-        'type'            => 'write',
-        'capabilities'    => 'tool/token:generatetoken',
-         'ajax'            => false,
+        'classname' => 'tool_token\external\token_api',
+        'methodname' => 'get_token',
+        'description' => 'Get a token for specific user and service.',
+        'type' => 'write',
+        'capabilities' => 'tool/token:generatetoken',
+        'ajax' => false,
     ],
 ];
 

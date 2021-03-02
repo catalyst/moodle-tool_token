@@ -34,10 +34,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 class user_extractor {
 
-    /** An instance of fields config class.
+    /**
+     * An instance of fields config class.
      * @var \tool_token\fields_config
      */
-    protected $fieldscofnig;
+    protected $fieldsconfig;
 
     /**
      * Constructor.
@@ -45,7 +46,7 @@ class user_extractor {
      * @param \tool_token\fields_config $fieldsconfig An instance of fields config class.
      */
     public function __construct(fields_config $fieldsconfig) {
-        $this->fieldscofnig = $fieldsconfig;
+        $this->fieldsconfig = $fieldsconfig;
     }
 
     /**
@@ -59,7 +60,7 @@ class user_extractor {
     public function get_user(string $fieldname, string $fieldvalue) : ?\stdClass {
         global $DB;
 
-        if (!$this->fieldscofnig->is_field_enabled($fieldname)) {
+        if (!$this->fieldsconfig->is_field_enabled($fieldname)) {
             throw new incorrect_field_exception($fieldname);
         }
 
@@ -69,7 +70,7 @@ class user_extractor {
         $joins = "";
         $where = "";
 
-        if ($this->fieldscofnig->is_custom_profile_field($fieldname)) {
+        if ($this->fieldsconfig->is_custom_profile_field($fieldname)) {
             $joins .= " LEFT JOIN {user_info_field} f ON f.shortname = :fieldname ";
             $joins .= " LEFT JOIN {user_info_data} d ON d.fieldid = f.id AND d.userid = u.id ";
             $where .= "AND d.data = :fieldvalue ";

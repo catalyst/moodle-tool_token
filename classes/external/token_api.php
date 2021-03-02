@@ -33,7 +33,6 @@ use tool_token\services_config;
 use tool_token\token_generator;
 use tool_token\user_extractor;
 
-
 defined('MOODLE_INTERNAL') || die();
 
 /**

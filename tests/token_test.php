@@ -28,7 +28,6 @@ use tool_token\token;
 
 global $CFG;
 
-
 class tool_token_token_testcase extends advanced_testcase {
 
     /**
