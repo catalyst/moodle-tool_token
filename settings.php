@@ -30,6 +30,14 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_token', get_string('pluginname', 'tool_token'));
     $ADMIN->add('tools', $settings);
 
+    // Token lifetime.
+    $settings->add(new admin_setting_configduration(
+            'tool_token/tokenlifetime',
+            get_string('tokenlifetime', 'tool_token'),
+            get_string('tokenlifetime_desc', 'tool_token'),
+            0)
+    );
+
     // Enabled user matching fields.
     $fieldsconfig = new \tool_token\fields_config();
     $options = $fieldsconfig->get_supported_fields();

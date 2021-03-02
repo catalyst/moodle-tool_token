@@ -143,8 +143,6 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
     /**
      * Simple test of generating a token.
-     *
-     * TODO: add more tests for all scenarios.
      */
     public function test_generate_token() {
         global $DB;
@@ -164,12 +162,49 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->assertEquals($user->id, $actual->userid);
         $this->assertEquals($serviceid, $actual->externalserviceid);
         $this->assertEquals(EXTERNAL_TOKEN_PERMANENT, $actual->tokentype);
+        $this->assertEquals(0, $actual->validuntil);
 
+        // Test that it's not generate a new token if there is a current one exists.
         $token2 = $tokengenerator->generate($user->id, 'fake WS');
         $this->assertSame($token1, $token2);
 
+        // Test that it's not generate a new token if there is a current one exists.
         $token3 = $tokengenerator->generate($user->id, 'fake WS');
         $this->assertSame($token1, $token3);
     }
 
+    /**
+     * Test that we respect lifetime settings when generate tokens.
+     */
+    public function test_generate_token_with_valid_until_configured() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+        $user = $this->getDataGenerator()->create_user();
+
+        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
+        $this->create_service();
+
+        $tokengenerator = new token_generator($this->servicesconfig);
+        $token1 = $tokengenerator->generate($user->id, 'fake WS');
+
+        $actual = $DB->get_record('external_tokens', ['token' => $token1]);
+        $this->assertEmpty($actual->validuntil);
+
+        sleep(2);
+        $token2 = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertSame($token1, $token2);
+
+        // Token valid for 1 second.
+        set_config('tokenlifetime', '1', 'tool_token');
+        sleep(2);
+
+        // Should generate a new token as the old one is expired.
+        $token3 = $tokengenerator->generate($user->id, 'fake WS');
+        $actual = $DB->get_record('external_tokens', ['token' => $token3]);
+        $this->assertNotEmpty($actual->validuntil);
+        $this->assertNotSame($token1, $token3);
+    }
 }

@@ -33,5 +33,7 @@ $string['error:servicenotavailable'] = 'Service is not available!';
 $string['error:incorrectfield'] = 'Field is not enabled for fetching users';
 $string['services'] = 'Enabled services';
 $string['services_desc'] = 'Token can be generated for enabled services only.';
+$string['tokenlifetime'] = 'Token lifetime';
+$string['tokenlifetime_desc'] = 'Once generated tokens will be valid for configured time. Note: 0 means no restriction.';
 $string['usermatchfields'] = 'Enabled user match fields';
 $string['usermatchfields_desc'] = 'These fields could be used in a web service call to match users in Moodle. Note: id is always enabled to have at least one field to match by.';

@@ -50,6 +50,30 @@ class token_generator {
     }
 
     /**
+     * Get configured lifetime for generated tokens.
+     *
+     * @return int
+     */
+    protected function get_token_lifetime() : int {
+        return (int) get_config('tool_token', 'tokenlifetime');
+    }
+
+    /**
+     * Get valid until date.
+     *
+     * @return int
+     */
+    protected function get_valid_until() : int {
+        $validuntil = $this->get_token_lifetime();
+
+        if ($validuntil > 0) {
+            $validuntil = $validuntil + time();
+        }
+
+        return $validuntil;
+    }
+
+    /**
      * Generate token.
      *
      * @param int $userid User id.
@@ -87,6 +111,12 @@ class token_generator {
                 $unsettoken = true;
             }
 
+            // Seems like lifetime settings are changed and we need to generate a new token.
+            if (empty($token->validuntil) && !empty($this->get_valid_until())) {
+                $DB->delete_records('external_tokens', ['token' => $token->token, 'tokentype' => EXTERNAL_TOKEN_PERMANENT]);
+                $unsettoken = true;
+            }
+
             // Remove token is not valid anymore.
             if (!empty($token->validuntil) && $token->validuntil < time()) {
                 $DB->delete_records('external_tokens', ['token' => $token->token, 'tokentype' => EXTERNAL_TOKEN_PERMANENT]);
@@ -107,7 +137,13 @@ class token_generator {
         if (count($tokens) > 0) {
             $token = array_pop($tokens)->token;
         } else {
-            $token = external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, \context_system::instance());
+            $token = external_generate_token(
+                EXTERNAL_TOKEN_PERMANENT,
+                $service,
+                $userid,
+                \context_system::instance(),
+                $this->get_valid_until()
+            );
         }
 
         return $token;
