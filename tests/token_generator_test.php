@@ -156,8 +156,9 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
         $tokengenerator = new token_generator($this->servicesconfig);
         $token1 = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertInstanceOf(\tool_token\token::class, $token1);
 
-        $actual = $DB->get_record('external_tokens', ['token' => $token1]);
+        $actual = $DB->get_record('external_tokens', ['token' => $token1->get_token()]);
 
         $this->assertEquals($user->id, $actual->userid);
         $this->assertEquals($serviceid, $actual->externalserviceid);
@@ -166,11 +167,11 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
         // Test that it's not generate a new token if there is a current one exists.
         $token2 = $tokengenerator->generate($user->id, 'fake WS');
-        $this->assertSame($token1, $token2);
+        $this->assertEquals($token1, $token2);
 
         // Test that it's not generate a new token if there is a current one exists.
         $token3 = $tokengenerator->generate($user->id, 'fake WS');
-        $this->assertSame($token1, $token3);
+        $this->assertEquals($token1, $token3);
     }
 
     /**
@@ -189,13 +190,14 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
         $tokengenerator = new token_generator($this->servicesconfig);
         $token1 = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertInstanceOf(\tool_token\token::class, $token1);
 
-        $actual = $DB->get_record('external_tokens', ['token' => $token1]);
+        $actual = $DB->get_record('external_tokens', ['token' => $token1->get_token()]);
         $this->assertEmpty($actual->validuntil);
 
         sleep(2);
         $token2 = $tokengenerator->generate($user->id, 'fake WS');
-        $this->assertSame($token1, $token2);
+        $this->assertEquals($token1, $token2);
 
         // Token valid for 1 second.
         set_config('tokenlifetime', '1', 'tool_token');
@@ -203,8 +205,8 @@ class tool_token_token_generator_testcase extends advanced_testcase {
 
         // Should generate a new token as the old one is expired.
         $token3 = $tokengenerator->generate($user->id, 'fake WS');
-        $actual = $DB->get_record('external_tokens', ['token' => $token3]);
-        $this->assertNotEmpty($actual->validuntil);
-        $this->assertNotSame($token1, $token3);
+        $actual = $DB->get_record('external_tokens', ['token' => $token3->get_token()]);
+        $this->assertEquals($token3->get_validuntil(), $actual->validuntil);
+        $this->assertNotEquals($token1, $token3);
     }
 }

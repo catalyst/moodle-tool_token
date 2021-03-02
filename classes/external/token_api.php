@@ -75,7 +75,8 @@ class token_api extends external_api {
 
         return [
             'userid' => $user->id,
-            'token' => $token,
+            'token' => $token->get_token(),
+            'validuntil' => $token->get_validuntil(),
         ];
     }
 
@@ -101,6 +102,11 @@ class token_api extends external_api {
         return new external_single_structure([
             'userid' => new external_value(PARAM_INT, 'Internal Moodle ID of the found user.', VALUE_OPTIONAL),
             'token' => new external_value(PARAM_RAW, 'Generated token', VALUE_OPTIONAL),
+            'validuntil' => new external_value(
+                PARAM_INT,
+                'Unix stamp of date when the token will expire. 0 means not expirable.',
+                VALUE_OPTIONAL
+            ),
         ]);
     }
 

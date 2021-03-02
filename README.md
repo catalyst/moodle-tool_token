@@ -32,7 +32,7 @@ https://example.local/webservice/rest/server.php?wstoken=r572f821c120ad147b244a9
 
 Response on success:
 
-{ "userid": 12, "token": "c27319f9f198028db79a5d955c01d6cb" }
+{ "userid": 12, "token": "c27319f9f198028db79a5d955c01d6cb", "validuntil": 0 }
 
 ## License ##
 

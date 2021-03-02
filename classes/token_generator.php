@@ -79,9 +79,9 @@ class token_generator {
      * @param int $userid User id.
      * @param string $serviceshortname Service short name.
      *
-     * @return string
+     * @return token
      */
-    public function generate(int $userid, string $serviceshortname) : string {
+    public function generate(int $userid, string $serviceshortname) : token {
         global $DB;
 
         require_capability('tool/token:generatetoken', \context_user::instance($userid));
@@ -135,18 +135,21 @@ class token_generator {
 
         // If some valid tokens exist then use the most recent.
         if (count($tokens) > 0) {
-            $token = array_pop($tokens)->token;
+            $existingtoken = array_pop($tokens);
+            $token = $existingtoken->token;
+            $validuntil = $existingtoken->validuntil;
         } else {
+            $validuntil = $this->get_valid_until();
             $token = external_generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
                 $service,
                 $userid,
                 \context_system::instance(),
-                $this->get_valid_until()
+                $validuntil
             );
         }
 
-        return $token;
+        return new token($token, $validuntil);
     }
 
 }
