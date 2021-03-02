@@ -8,7 +8,6 @@ Add the plugin to /admin/tool/token/
 
 Run the Moodle upgrade.
 
-
 ## Configuration ##
 
 The plugin has following settings.
@@ -16,8 +15,6 @@ The plugin has following settings.
 * Token lifetime - allows configuring max lifetime for the generated tokens.
 * Enabled user fields - allows configuring user fields for matching users, including unique custom user profile fields.
 * Enabled services - allows whitelisting only specific services for generating tokens using this plugin.
-
-
 
 ## Usage ##
 
@@ -28,7 +25,6 @@ Generator Service**, but it will be disabled by default. You should enable it an
 
 ###  Example of GET request ###
 https://example.local/webservice/rest/server.php?wstoken=r572f821c120ad147b244a939fdd7324&wsfunction=tool_token_get_token&moodlewsrestformat=json&idtype=username&idvalue=student&service=test_service
-
 
 Response on success:
 
