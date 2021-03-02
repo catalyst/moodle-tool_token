@@ -1,8 +1,38 @@
 # Token generator #
 
-TODO Describe the plugin shortly here.
+An admin tool provides a web service for generating Moodle web service tokens. It conceptually works the same way as /login/token.php, but via web services. See https://docs.moodle.org/dev/Creating_a_web_service_client#How_to_get_a_user_token
 
-TODO Provide more detailed description here.
+## Installation ##
+
+Add the plugin to /admin/tool/token/
+
+Run the Moodle upgrade.
+
+
+## Configuration ##
+
+The plugin has following settings.
+
+* Token lifetime - allows configuring max lifetime for the generated tokens.
+* Enabled user fields - allows configuring user fields for matching users, including unique custom user profile fields.
+* Enabled services - allows whitelisting only specific services for generating tokens using this plugin.
+
+
+
+## Usage ##
+
+You need to configure your Moodle for using Web services. See documentation https://docs.moodle.org/310/en/Web_services
+
+On the installation the plugin will automatically create **Token
+Generator Service**, but it will be disabled by default. You should enable it and create a token for that service. Then you can call tool_token_get_token function baked to that service.
+
+###  Example of GET request ###
+https://example.local/webservice/rest/server.php?wstoken=r572f821c120ad147b244a939fdd7324&wsfunction=tool_token_get_token&moodlewsrestformat=json&idtype=username&idvalue=student&service=test_service
+
+
+Response on success:
+
+{ "userid": 12, "token": "c27319f9f198028db79a5d955c01d6cb" }
 
 ## License ##
 
