@@ -42,7 +42,11 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function setUp() {
         parent::setUp();
         $builder = $this->getMockBuilder('\tool_token\fields_config')
-            ->setMethods(['is_field_enabled', 'is_custom_profile_field']);
+            ->setMethods([
+                'is_field_enabled',
+                'is_custom_profile_field',
+                'get_enabled_auth_methods'
+            ]);
         $this->fieldsconfig = $builder->getMock();
     }
 
@@ -82,6 +86,7 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function test_get_user_throw_exception_on_not_enabled_field() {
         $this->fieldsconfig->method('is_field_enabled')->willReturn(false);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
         $extractor = new user_extractor($this->fieldsconfig);
 
@@ -99,6 +104,7 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
         // Two users with empty idnumber.
         $user1 = $this->getDataGenerator()->create_user();
@@ -120,6 +126,8 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+
         $extractor = new user_extractor($this->fieldsconfig);
 
         $user1 = $this->getDataGenerator()->create_user(['idnumber' => 'user1']);
@@ -151,6 +159,8 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(true);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+
         $extractor = new user_extractor($this->fieldsconfig);
 
         $field1 = $this->add_user_profile_field('field1', 'text', true);
