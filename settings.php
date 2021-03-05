@@ -47,7 +47,7 @@ if ($hassiteconfig) {
     }
 
     $settings->add(new admin_setting_configmulticheckbox(
-        'tool_token/tool_token',
+        'tool_token/auth',
         get_string('auth', 'tool_token'),
         get_string('auth_desc', 'tool_token'),
         [],
