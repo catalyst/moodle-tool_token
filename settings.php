@@ -38,6 +38,22 @@ if ($hassiteconfig) {
             0)
     );
 
+    // Enabled auth methods.
+    $authtypes = get_enabled_auth_plugins(true);
+    $authselect = [];
+    foreach ($authtypes as $type) {
+        $auth = get_auth_plugin($type);
+        $authselect[$type] = $auth->get_title();
+    }
+
+    $settings->add(new admin_setting_configmulticheckbox(
+        'tool_token/auth',
+        get_string('auth', 'tool_token'),
+        get_string('auth_desc', 'tool_token'),
+        [],
+        $authselect
+    ));
+
     // Enabled user matching fields.
     $fieldsconfig = new \tool_token\fields_config();
     $options = $fieldsconfig->get_supported_fields();

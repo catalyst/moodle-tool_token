@@ -137,6 +137,25 @@ class fields_config {
     }
 
     /**
+     * Get a list of enabled auth methods.
+     *
+     * @return array
+     */
+    public function get_enabled_auth_methods() : array {
+        $result = [];
+        $config = get_config('tool_token', 'auth');
+
+        if (!empty($config)) {
+            // Remove all empty strings if any.
+            $result = array_filter(explode(',', $config), function($value) {
+                return trim($value) !== '';
+            });
+        }
+
+        return array_values($result);
+    }
+
+    /**
      * Normalise user match field.
      *
      * @param string $fieldname User match field shortname.

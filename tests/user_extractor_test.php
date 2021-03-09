@@ -42,7 +42,11 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function setUp() {
         parent::setUp();
         $builder = $this->getMockBuilder('\tool_token\fields_config')
-            ->setMethods(['is_field_enabled', 'is_custom_profile_field']);
+            ->setMethods([
+                'is_field_enabled',
+                'is_custom_profile_field',
+                'get_enabled_auth_methods'
+            ]);
         $this->fieldsconfig = $builder->getMock();
     }
 
@@ -82,6 +86,7 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function test_get_user_throw_exception_on_not_enabled_field() {
         $this->fieldsconfig->method('is_field_enabled')->willReturn(false);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
         $extractor = new user_extractor($this->fieldsconfig);
 
@@ -99,6 +104,7 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
         // Two users with empty idnumber.
         $user1 = $this->getDataGenerator()->create_user();
@@ -120,6 +126,8 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+
         $extractor = new user_extractor($this->fieldsconfig);
 
         $user1 = $this->getDataGenerator()->create_user(['idnumber' => 'user1']);
@@ -141,6 +149,13 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
             $actual = $extractor->get_user($fieldname, strtoupper($user1->{$fieldname}));
             $this->assertSame($user1->id, $actual->id);
         }
+
+        // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+
+        $extractor = new user_extractor($this->fieldsconfig);
+        $this->assertNull($extractor->get_user('email', $user1->email));
+        $this->assertNull($extractor->get_user('id', $user2->id));
     }
 
     /**
@@ -151,6 +166,8 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
 
         $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
         $this->fieldsconfig->method('is_custom_profile_field')->willReturn(true);
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+
         $extractor = new user_extractor($this->fieldsconfig);
 
         $field1 = $this->add_user_profile_field('field1', 'text', true);
@@ -181,6 +198,13 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         // Test by custom user profile field should be case sensitive.
         $actual = $extractor->get_user('field1', 'user 1 field 1');
         $this->assertNull($actual);
+
+        // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+
+        $extractor = new user_extractor($this->fieldsconfig);
+        $this->assertNull($extractor->get_user('field1', 'User 1 Field 1'));
+        $this->assertNull($extractor->get_user('field2', 'User 2 Field 2'));
     }
 
 }

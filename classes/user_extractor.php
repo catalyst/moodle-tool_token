@@ -66,32 +66,36 @@ class user_extractor {
 
         $user = null;
 
-        $params = [];
-        $joins = "";
-        $where = "";
+        // At least one auth method should be enabled.
+        if ($auths = $this->fieldsconfig->get_enabled_auth_methods()) {
+            $joins = "";
+            $fieldsql = "";
 
-        if ($this->fieldsconfig->is_custom_profile_field($fieldname)) {
-            $joins .= " LEFT JOIN {user_info_field} f ON f.shortname = :fieldname ";
-            $joins .= " LEFT JOIN {user_info_data} d ON d.fieldid = f.id AND d.userid = u.id ";
-            $where .= "AND d.data = :fieldvalue ";
-            $params['fieldname'] = $fieldname;
-            $params['fieldvalue'] = $fieldvalue;
-        } else {
-            $caseinsensitive = ($fieldname == 'id');
-            $fieldselect = $DB->sql_equal($fieldname, ':fieldvalue', $caseinsensitive);
+            list($authsql, $params) = $DB->get_in_or_equal($auths, SQL_PARAMS_NAMED, 'auth');
 
-            $where .= "AND $fieldselect ";
-            $params['fieldvalue'] = $fieldvalue;
-        }
+            if ($this->fieldsconfig->is_custom_profile_field($fieldname)) {
+                $joins .= " LEFT JOIN {user_info_field} f ON f.shortname = :fieldname ";
+                $joins .= " LEFT JOIN {user_info_data} d ON d.fieldid = f.id AND d.userid = u.id ";
+                $fieldsql .= " AND d.data = :fieldvalue ";
+                $params['fieldname'] = $fieldname;
+                $params['fieldvalue'] = $fieldvalue;
+            } else {
+                $caseinsensitive = ($fieldname == 'id');
+                $fieldselect = $DB->sql_equal($fieldname, ':fieldvalue', $caseinsensitive);
 
-        $sql = "SELECT u.* FROM {user} u $joins WHERE u.deleted=0 $where";
-
-        if ($result = $DB->get_records_sql($sql, $params)) {
-            if (count($result) > 1) {
-                throw new more_than_one_user_exception();
+                $fieldsql .= " AND $fieldselect ";
+                $params['fieldvalue'] = $fieldvalue;
             }
-            $user = reset($result);
-            profile_load_custom_fields($user);
+
+            $sql = "SELECT u.* FROM {user} u $joins WHERE u.deleted=0 AND u.auth $authsql $fieldsql";
+
+            if ($result = $DB->get_records_sql($sql, $params)) {
+                if (count($result) > 1) {
+                    throw new more_than_one_user_exception();
+                }
+                $user = reset($result);
+                profile_load_custom_fields($user);
+            }
         }
 
         return $user;
