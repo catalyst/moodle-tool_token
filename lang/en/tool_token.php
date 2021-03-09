@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Token generator';
 $string['token:generatetoken'] = 'Generate Token';
-
 $string['privacy:metadata'] = 'The Token generator plugin does not store any personal data.';
 $string['error:morethanoneuser'] = 'More than one user found.';
 $string['error:servicenotavailable'] = 'Service is not available!';
