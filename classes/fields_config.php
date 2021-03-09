@@ -152,7 +152,7 @@ class fields_config {
             });
         }
 
-        return $result;
+        return array_values($result);
     }
 
     /**

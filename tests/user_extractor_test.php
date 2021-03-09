@@ -149,6 +149,13 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
             $actual = $extractor->get_user($fieldname, strtoupper($user1->{$fieldname}));
             $this->assertSame($user1->id, $actual->id);
         }
+
+        // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+
+        $extractor = new user_extractor($this->fieldsconfig);
+        $this->assertNull($extractor->get_user('email', $user1->email));
+        $this->assertNull($extractor->get_user('id', $user2->id));
     }
 
     /**
@@ -191,6 +198,13 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         // Test by custom user profile field should be case sensitive.
         $actual = $extractor->get_user('field1', 'user 1 field 1');
         $this->assertNull($actual);
+
+        // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+
+        $extractor = new user_extractor($this->fieldsconfig);
+        $this->assertNull($extractor->get_user('field1', 'User 1 Field 1'));
+        $this->assertNull($extractor->get_user('field2', 'User 2 Field 2'));
     }
 
 }

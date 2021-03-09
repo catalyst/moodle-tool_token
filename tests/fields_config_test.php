@@ -151,11 +151,11 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $fieldsconfig = new fields_config();
 
         // ID must be presented all the time.
-        $this->assertTrue(is_array($fieldsconfig->get_enabled_fields()));
+        $this->assertIsArray($fieldsconfig->get_enabled_fields());
         $this->assertEquals(['id'], $fieldsconfig->get_enabled_fields());
 
         set_config('usermatchfields', $configvalue, 'tool_token');
-        $this->assertTrue(is_array($fieldsconfig->get_enabled_fields()));
+        $this->assertIsArray($fieldsconfig->get_enabled_fields());
         $this->assertEquals($expected, $fieldsconfig->get_enabled_fields());
     }
 
@@ -189,6 +189,40 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $this->assertTrue($fieldsconfig->is_field_enabled('field1'));
         $this->assertFalse($fieldsconfig->is_field_enabled('field2'));
         $this->assertFalse($fieldsconfig->is_field_enabled('ramdom string'));
+    }
+
+    /**
+     * A data provider for testing test_get_enabled_auth_methods.
+     *
+     * @return array[]
+     */
+    public function get_enabled_auth_data_provider() : array {
+        return [
+            ['', []],
+            ['manual', ['manual']],
+            ['test,1, null, , ,0,false', ['test', '1', ' null', '0', 'false']]
+        ];
+    }
+
+    /**
+     * Test we can get enabled auth methods.
+     *
+     * @dataProvider get_enabled_auth_data_provider
+     *
+     * @param string $configvalue A value for saving to config.
+     * @param array $expected Expected list of enabled fields.
+     */
+    public function test_get_enabled_auth_methods(string $configvalue, array $expected) {
+        $this->resetAfterTest();
+
+        $fieldsconfig = new fields_config();
+
+        $this->assertIsArray($fieldsconfig->get_enabled_auth_methods());
+        $this->assertEmpty($fieldsconfig->get_enabled_auth_methods());
+
+        set_config('auth', $configvalue, 'tool_token');
+        $this->assertIsArray($fieldsconfig->get_enabled_auth_methods());
+        $this->assertEquals($expected, $fieldsconfig->get_enabled_auth_methods());
     }
 }
 
