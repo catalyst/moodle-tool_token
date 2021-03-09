@@ -12,9 +12,10 @@ Run the Moodle upgrade.
 
 The plugin has following settings.
 
-* Token lifetime - allows configuring max lifetime for the generated tokens.
-* Enabled user fields - allows configuring user fields for matching users, including unique custom user profile fields.
-* Enabled services - allows whitelisting only specific services for generating tokens using this plugin.
+* Token lifetime - allows configuring max lifetime for the generated tokens. Once generated tokens will be valid for configured time.
+* Enabled auth methods - allows configuring auth methods to filter user by. Token can be generated for users with enabled auth methods only.
+* Enabled user fields - allows configuring user fields for matching users, including unique custom user profile fields. These fields could be used in a web service call to match users in Moodle. Note: 'id' filed is always enabled.
+* Enabled services - allows whitelisting only specific services for generating tokens using this plugin. Token can be generated for enabled services only.
 
 ## Usage ##
 
