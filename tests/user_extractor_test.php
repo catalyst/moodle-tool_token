@@ -41,13 +41,21 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
      */
     public function setUp() {
         parent::setUp();
-        $builder = $this->getMockBuilder('\tool_token\fields_config')
+        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
+    }
+
+    /**
+     * Helper method to mock fields_config.
+     *
+     * @return \PHPUnit\Framework\MockObject\MockObject
+     */
+    protected function build_mocked_fieldsconfig() {
+        return $this->getMockBuilder('\tool_token\fields_config')
             ->setMethods([
                 'is_field_enabled',
                 'is_custom_profile_field',
                 'get_enabled_auth_methods'
-            ]);
-        $this->fieldsconfig = $builder->getMock();
+            ])->getMock();
     }
 
     /**
@@ -151,6 +159,9 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         }
 
         // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
+        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
         $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
 
         $extractor = new user_extractor($this->fieldsconfig);
@@ -200,6 +211,9 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         $this->assertNull($actual);
 
         // Now emulate disabling auth methods and see that we won't get any users matched.
+        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
+        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
         $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
 
         $extractor = new user_extractor($this->fieldsconfig);

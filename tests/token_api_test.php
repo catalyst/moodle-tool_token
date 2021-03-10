@@ -43,15 +43,6 @@ class tool_token_token_api_testcase extends advanced_testcase {
     protected $user2;
 
     /**
-     * Initial set up which runs before each test method.
-     */
-    public function setUp() {
-        parent::setUp();
-
-        $this->resetAfterTest();
-    }
-
-    /**
      * A helper function to create a new service.
      *
      * @return int ID of a newly created service.
@@ -123,6 +114,10 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test getting a token without required permissions.
      */
     public function test_get_token_without_permissions() {
+        $this->resetAfterTest();
+
+        set_config('auth', 'manual', 'tool_token');
+
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
@@ -151,6 +146,8 @@ class tool_token_token_api_testcase extends advanced_testcase {
     public function test_get_token_with_by_user_with_permissions() {
         global $DB;
 
+        $this->resetAfterTest();
+
         $roleid = $this->getDataGenerator()->create_role();
         assign_capability('tool/token:generatetoken', CAP_ALLOW, $roleid, context_system::instance());
 
@@ -164,6 +161,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
 
         set_config('usermatchfields', 'username,profile_field1,profile_field2', 'tool_token');
         set_config('services', 'fake WS', 'tool_token');
+        set_config('auth', 'manual', 'tool_token');
 
         // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
@@ -209,6 +207,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test trying to get a token for not existing user.
      */
     public function test_get_token_for_not_existing_user() {
+        $this->resetAfterTest();
         $this->setAdminUser();
 
         // Workaround to be able to call external_api::call_external_function.
@@ -232,12 +231,14 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test get token by not enabled field.
      */
     public function test_get_token_for_by_not_enabled_field() {
+        $this->resetAfterTest();
         $this->setAdminUser();
         $this->create_service();
         $this->set_up_users();
 
         set_config('usermatchfields', 'username,profile_field1', 'tool_token');
         set_config('services', 'fake WS', 'tool_token');
+        set_config('auth', 'manual', 'tool_token');
 
         // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
@@ -260,14 +261,14 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * Test getting a token by incorrect service.
      */
     public function test_get_token_for_incorrect_service() {
+        $this->resetAfterTest();
         $this->setAdminUser();
-
         $this->create_service();
-
         $this->set_up_users();
 
         set_config('usermatchfields', 'username,profile_field1', 'tool_token');
         set_config('services', '', 'tool_token');
+        set_config('auth', 'manual', 'tool_token');
 
         // Workaround to be able to call external_api::call_external_function.
         $_POST['sesskey'] = sesskey();
@@ -297,6 +298,35 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertTrue($token['error']);
         $this->assertSame('Service is not available!', $token['exception']->message);
         $this->assertContains('Not Existing', $token['exception']->debuginfo);
+    }
+
+    /**
+     * Test getting a token if not auth methods enabled.
+     */
+    public function test_get_token_is_no_auth_method_enabled() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->create_service();
+        $this->set_up_users();
+
+        set_config('usermatchfields', 'username,profile_field1', 'tool_token');
+        set_config('services', 'fake WS', 'tool_token');
+        set_config('auth', '', 'tool_token');
+
+        // Workaround to be able to call external_api::call_external_function.
+        $_POST['sesskey'] = sesskey();
+
+        $token = external_api::call_external_function('tool_token_get_token', [
+            'idtype' => 'id',
+            'idvalue' => $this->user1->id,
+            'service' => 'fake WS'
+        ]);
+        $this->assertIsArray($token);
+        $this->assertArrayHasKey('error', $token);
+        $this->assertArrayHasKey('exception', $token);
+        $this->assertTrue($token['error']);
+        $this->assertSame('Invalid parameter value detected', $token['exception']->message);
+        $this->assertContains('User not found', $token['exception']->debuginfo);
     }
 
 }
