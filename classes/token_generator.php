@@ -70,7 +70,7 @@ class token_generator {
             $validuntil = $validuntil + time();
         }
 
-        return $validuntil;
+        return (int) $validuntil;
     }
 
     /**
@@ -137,7 +137,7 @@ class token_generator {
         if (count($tokens) > 0) {
             $existingtoken = array_pop($tokens);
             $token = $existingtoken->token;
-            $validuntil = $existingtoken->validuntil;
+            $validuntil = (int) $existingtoken->validuntil;
         } else {
             $validuntil = $this->get_valid_until();
             $token = external_generate_token(

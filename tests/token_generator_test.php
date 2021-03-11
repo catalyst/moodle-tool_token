@@ -209,4 +209,37 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->assertEquals($token3->get_validuntil(), $actual->validuntil);
         $this->assertNotEquals($token1, $token3);
     }
+
+    /**
+     * Test generate correct token when existing token has null as valid until date.
+     */
+    public function test_generate_token_correctly_if_existing_token_has_null_validuntil_date() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+        $user = $this->getDataGenerator()->create_user();
+
+        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
+        $serviceid = $this->create_service();
+
+        // Create an existing token with null validuntil.
+        $newtoken = new stdClass();
+        $newtoken->token = md5(uniqid(rand(), 1));
+        $newtoken->externalserviceid = $serviceid;
+        $newtoken->tokentype = EXTERNAL_TOKEN_PERMANENT;
+        $newtoken->userid = $user->id;
+        $newtoken->contextid = context_system::instance()->id;
+        $newtoken->creatorid = $user->id;
+        $newtoken->timecreated = time();
+        $newtoken->validuntil = null;
+        $newtoken->privatetoken = random_string(64);
+        $DB->insert_record('external_tokens', $newtoken);
+
+        $tokengenerator = new token_generator($this->servicesconfig);
+        $token = $tokengenerator->generate($user->id, 'fake WS');
+        $this->assertSame($newtoken->token, $token->get_token());
+        $this->assertSame(0, $token->get_validuntil());
+    }
 }
