@@ -69,7 +69,6 @@ if ($hassiteconfig) {
 
     // Enabled supported services.
     $servicesconfig = new \tool_token\services_config();
-    $supportedservicess = $servicesconfig->get_supported_services();
     $options = [];
     foreach ($servicesconfig->get_supported_services() as $service) {
         $options[$service->shortname] = $service->name . ' (' . $service->shortname . ')';

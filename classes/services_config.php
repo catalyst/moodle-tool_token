@@ -41,13 +41,20 @@ class services_config {
     public function get_supported_services() : array {
         global $DB;
 
-        return $DB->get_records_select(
+        $services = [];
+
+        $records = $DB->get_records_select(
             'external_services',
             "shortname IS NOT NULL AND shortname <> ?",
             [''],
-            'name',
-            'shortname, *'
+            'name'
         );
+
+        foreach ($records as $record) {
+            $services[$record->shortname] = $record;
+        }
+
+        return $services;
     }
 
     /**
