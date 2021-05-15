@@ -28,6 +28,13 @@ global $CFG;
 
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
+/**
+ * Tests for token_api class.
+ *
+ * @package     tool_token
+ * @copyright   2021 Catalyst IT
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tool_token_token_api_testcase extends advanced_testcase {
 
     /**
@@ -185,7 +192,6 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertEquals($this->user1->id, $token1['data']['userid']);
         $this->assertSame($expected->token, $token1['data']['token']);
         $this->assertEquals($expected->validuntil, $token1['data']['validuntil']);
-
 
         $token2 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'username',

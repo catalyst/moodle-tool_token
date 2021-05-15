@@ -24,6 +24,10 @@
 
 namespace tool_token\external;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once("$CFG->libdir/externallib.php");
+
 use external_api;
 use external_function_parameters;
 use external_single_structure;
@@ -32,8 +36,6 @@ use tool_token\fields_config;
 use tool_token\services_config;
 use tool_token\token_generator;
 use tool_token\user_extractor;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Token related external functions

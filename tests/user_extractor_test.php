@@ -28,6 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+/**
+ * Tests for user_extractor class.
+ *
+ * @package     tool_token
+ * @copyright   2021 Catalyst IT
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tool_token_user_extractor_testcase extends advanced_testcase {
 
     /**
