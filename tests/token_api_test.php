@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+require_once("$CFG->libdir/externallib.php");
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
 /**

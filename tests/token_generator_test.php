@@ -38,19 +38,13 @@ global $CFG;
 class tool_token_token_generator_testcase extends advanced_testcase {
 
     /**
-     * Mocked services config instance.
-     * @var \tool_token\services_config
+     * Helper method to mock services_config.
+     *
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected $servicesconfig;
-
-    /**
-     * Set up.
-     */
-    public function setUp() {
-        parent::setUp();
-        $builder = $this->getMockBuilder('\tool_token\services_config')
-            ->setMethods(['is_service_enabled']);
-        $this->servicesconfig = $builder->getMock();
+    protected function build_mocked_servicesconfig() {
+        return $this->getMockBuilder('\tool_token\services_config')
+            ->setMethods(['is_service_enabled'])->getMock();
     }
 
     /**
@@ -81,7 +75,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
     public function test_generate_token_and_user_is_not_exist() {
         $this->resetAfterTest();
         $this->create_service();
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($this->build_mocked_servicesconfig());
 
         $this->expectException('dml_missing_record_exception');
         $this->expectExceptionMessage('Invalid user');
@@ -97,7 +91,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($this->build_mocked_servicesconfig());
 
         $this->expectException('required_capability_exception');
         $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that (Generate Token).');
@@ -114,8 +108,9 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->create_service();
         $user = $this->getDataGenerator()->create_user();
 
-        $this->servicesconfig->method('is_service_enabled')->willReturn(false);
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $servicesconfig = $this->build_mocked_servicesconfig();
+        $servicesconfig->method('is_service_enabled')->willReturn(false);
+        $tokengenerator = new token_generator($servicesconfig);
 
         $this->expectException('moodle_exception');
         $this->expectExceptionMessage('Service is not available! (fake WS)');
@@ -137,11 +132,11 @@ class tool_token_token_generator_testcase extends advanced_testcase {
                 'is_service_enabled',
                 'get_service_by_shortname'
             ]);
-        $this->servicesconfig = $builder->getMock();
-        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
-        $this->servicesconfig->method('get_service_by_shortname')->willReturn(null);
+        $servicesconfig = $builder->getMock();
+        $servicesconfig->method('is_service_enabled')->willReturn(true);
+        $servicesconfig->method('get_service_by_shortname')->willReturn(null);
 
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($servicesconfig);
 
         $this->expectException('moodle_exception');
         $this->expectExceptionMessage('Service is not available! (fake WS)');
@@ -158,10 +153,11 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->setAdminUser();
         $user = $this->getDataGenerator()->create_user();
 
-        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
+        $servicesconfig = $this->build_mocked_servicesconfig();
+        $servicesconfig->method('is_service_enabled')->willReturn(true);
         $serviceid = $this->create_service();
 
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($servicesconfig);
         $token1 = $tokengenerator->generate($user->id, 'fake WS');
         $this->assertInstanceOf(\tool_token\token::class, $token1);
 
@@ -192,10 +188,11 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->setAdminUser();
         $user = $this->getDataGenerator()->create_user();
 
-        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
+        $servicesconfig = $this->build_mocked_servicesconfig();
+        $servicesconfig->method('is_service_enabled')->willReturn(true);
         $this->create_service();
 
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($servicesconfig);
         $token1 = $tokengenerator->generate($user->id, 'fake WS');
         $this->assertInstanceOf(\tool_token\token::class, $token1);
 
@@ -228,7 +225,8 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $this->setAdminUser();
         $user = $this->getDataGenerator()->create_user();
 
-        $this->servicesconfig->method('is_service_enabled')->willReturn(true);
+        $servicesconfig = $this->build_mocked_servicesconfig();
+        $servicesconfig->method('is_service_enabled')->willReturn(true);
         $serviceid = $this->create_service();
 
         // Create an existing token with null validuntil.
@@ -244,7 +242,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $newtoken->privatetoken = random_string(64);
         $DB->insert_record('external_tokens', $newtoken);
 
-        $tokengenerator = new token_generator($this->servicesconfig);
+        $tokengenerator = new token_generator($servicesconfig);
         $token = $tokengenerator->generate($user->id, 'fake WS');
         $this->assertSame($newtoken->token, $token->get_token());
         $this->assertSame(0, $token->get_validuntil());

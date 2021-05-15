@@ -76,12 +76,18 @@ class user_extractor {
             if ($this->fieldsconfig->is_custom_profile_field($fieldname)) {
                 $joins .= " LEFT JOIN {user_info_field} f ON f.shortname = :fieldname ";
                 $joins .= " LEFT JOIN {user_info_data} d ON d.fieldid = f.id AND d.userid = u.id ";
-                $fieldsql .= " AND d.data = :fieldvalue ";
+                $fieldselect = $DB->sql_equal('d.data', ':fieldvalue');
+                $fieldsql .= " AND $fieldselect ";
                 $params['fieldname'] = $fieldname;
                 $params['fieldvalue'] = $fieldvalue;
             } else {
-                $caseinsensitive = ($fieldname == 'id');
-                $fieldselect = $DB->sql_equal($fieldname, ':fieldvalue', $caseinsensitive);
+                if ($fieldname == 'id') {
+                    // Hack to make MySQL happy as sql_equal doesn't work in MySQL of id field.
+                    $fieldselect = 'id = :fieldvalue';
+                } else {
+                    // Always perform case insensitive search of fields like email, shortname.
+                    $fieldselect = $DB->sql_equal($fieldname, ':fieldvalue', false);
+                }
 
                 $fieldsql .= " AND $fieldselect ";
                 $params['fieldvalue'] = $fieldvalue;
