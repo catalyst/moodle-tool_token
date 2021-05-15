@@ -38,20 +38,6 @@ global $CFG;
 class tool_token_user_extractor_testcase extends advanced_testcase {
 
     /**
-     * Mocked field config instance.
-     * @var \tool_token\fields_config
-     */
-    protected $fieldsconfig;
-
-    /**
-     * Set up.
-     */
-    public function setUp() {
-        parent::setUp();
-        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
-    }
-
-    /**
      * Helper method to mock fields_config.
      *
      * @return \PHPUnit\Framework\MockObject\MockObject
@@ -99,11 +85,14 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
      * Test a correct exception is thrown when trying to search by disable field.
      */
     public function test_get_user_throw_exception_on_not_enabled_field() {
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(false);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+        $this->resetAfterTest();
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(false);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+
+        $extractor = new user_extractor($fieldsconfig);
 
         $this->expectException('tool_token\incorrect_field_exception');
         $this->expectExceptionMessage('Field is not enabled for fetching users (Field: "disabled")');
@@ -117,15 +106,16 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function test_get_user_throw_exception_if_found_more_than_one_user() {
         $this->resetAfterTest();
 
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
         // Two users with empty idnumber.
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $extractor = new user_extractor($fieldsconfig);
 
         $this->expectException('tool_token\more_than_one_user_exception');
         $this->expectExceptionMessage('More than one user found.');
@@ -139,11 +129,12 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function test_get_user_by_user_field() {
         $this->resetAfterTest();
 
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $extractor = new user_extractor($fieldsconfig);
 
         $user1 = $this->getDataGenerator()->create_user(['idnumber' => 'user1']);
         $user2 = $this->getDataGenerator()->create_user(['idnumber' => 'user2']);
@@ -166,12 +157,12 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         }
 
         // Now emulate disabling auth methods and see that we won't get any users matched.
-        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $extractor = new user_extractor($fieldsconfig);
         $this->assertNull($extractor->get_user('email', $user1->email));
         $this->assertNull($extractor->get_user('id', $user2->id));
     }
@@ -182,11 +173,12 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
     public function test_get_user_by_custom_profile_field() {
         $this->resetAfterTest();
 
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(true);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(true);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn(['manual']);
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $extractor = new user_extractor($fieldsconfig);
 
         $field1 = $this->add_user_profile_field('field1', 'text', true);
         $field2 = $this->add_user_profile_field('field2', 'text', true);
@@ -218,12 +210,12 @@ class tool_token_user_extractor_testcase extends advanced_testcase {
         $this->assertNull($actual);
 
         // Now emulate disabling auth methods and see that we won't get any users matched.
-        $this->fieldsconfig = $this->build_mocked_fieldsconfig();
-        $this->fieldsconfig->method('is_field_enabled')->willReturn(true);
-        $this->fieldsconfig->method('is_custom_profile_field')->willReturn(false);
-        $this->fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
+        $fieldsconfig = $this->build_mocked_fieldsconfig();
+        $fieldsconfig->method('is_field_enabled')->willReturn(true);
+        $fieldsconfig->method('is_custom_profile_field')->willReturn(false);
+        $fieldsconfig->method('get_enabled_auth_methods')->willReturn([]);
 
-        $extractor = new user_extractor($this->fieldsconfig);
+        $extractor = new user_extractor($fieldsconfig);
         $this->assertNull($extractor->get_user('field1', 'User 1 Field 1'));
         $this->assertNull($extractor->get_user('field2', 'User 2 Field 2'));
     }
