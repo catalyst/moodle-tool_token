@@ -28,6 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+/**
+ * Tests for token_generator class.
+ *
+ * @package     tool_token
+ * @copyright   2021 Catalyst IT
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tool_token_token_generator_testcase extends advanced_testcase {
 
     /**
