@@ -1,4 +1,4 @@
-![Build Status](https://github.com/catalyst/moodle-tool_token/actions/workflows/ci.yml/badge.svg?branch=VERSION1)
+![Build Status](https://github.com/catalyst/moodle-tool_token/actions/workflows/ci.yml/badge.svg?branch=master)
 
 # Token generator #
 
