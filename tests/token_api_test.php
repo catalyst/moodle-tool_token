@@ -231,7 +231,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertArrayHasKey('exception', $token);
         $this->assertTrue($token['error']);
         $this->assertSame('Invalid parameter value detected', $token['exception']->message);
-        $this->assertContains('User not found!', $token['exception']->debuginfo);
+        $this->assertStringContainsString('User not found!', $token['exception']->debuginfo);
     }
 
     /**
@@ -261,7 +261,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertArrayHasKey('exception', $token);
         $this->assertTrue($token['error']);
         $this->assertSame('Field is not enabled for fetching users', $token['exception']->message);
-        $this->assertContains('Field: "field2"', $token['exception']->debuginfo);
+        $this->assertStringContainsString('Field: "field2"', $token['exception']->debuginfo);
     }
 
     /**
@@ -291,7 +291,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertArrayHasKey('exception', $token);
         $this->assertTrue($token['error']);
         $this->assertSame('Service is not available!', $token['exception']->message);
-        $this->assertContains('fake WS', $token['exception']->debuginfo);
+        $this->assertStringContainsString('fake WS', $token['exception']->debuginfo);
 
         // Not existing service.
         $token = external_api::call_external_function('tool_token_get_token', [
@@ -304,7 +304,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertArrayHasKey('exception', $token);
         $this->assertTrue($token['error']);
         $this->assertSame('Service is not available!', $token['exception']->message);
-        $this->assertContains('Not Existing', $token['exception']->debuginfo);
+        $this->assertStringContainsString('Not Existing', $token['exception']->debuginfo);
     }
 
     /**
@@ -333,7 +333,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $this->assertArrayHasKey('exception', $token);
         $this->assertTrue($token['error']);
         $this->assertSame('Invalid parameter value detected', $token['exception']->message);
-        $this->assertContains('User not found', $token['exception']->debuginfo);
+        $this->assertStringContainsString('User not found', $token['exception']->debuginfo);
     }
 
 }
