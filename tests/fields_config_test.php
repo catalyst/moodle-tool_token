@@ -232,4 +232,3 @@ class tool_token_fields_config_testcase extends advanced_testcase {
         $this->assertEquals($expected, $fieldsconfig->get_enabled_auth_methods());
     }
 }
-

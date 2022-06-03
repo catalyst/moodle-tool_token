@@ -24,8 +24,6 @@
 
 namespace tool_token;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The class responsible for managing services config.
  *
