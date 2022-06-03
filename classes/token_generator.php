@@ -24,8 +24,6 @@
 
 namespace tool_token;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The class responsible for generating a token for provided user.
  *

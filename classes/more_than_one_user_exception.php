@@ -24,8 +24,6 @@
 
 namespace tool_token;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * More than one user exception.
  *
