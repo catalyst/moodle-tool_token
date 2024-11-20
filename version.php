@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_token';
-$plugin->release = '0.1.0';
-$plugin->version = 2023010401;
-$plugin->requires = 2020061500;
-$plugin->supported = [39, 405];  // Available as of Moodle 3.9.0 or later.
+$plugin->release = 2024112000;
+$plugin->version = 2024112000;
+$plugin->requires = 2024042200;
+$plugin->supports  = [404, 405];
 $plugin->maturity = MATURITY_STABLE;

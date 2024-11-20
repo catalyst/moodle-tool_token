@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_token/ci.yml?branch=master)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_token/ci.yml?branch=MOODLE_404_STABLE)
 
 # Token generator #
 
@@ -8,9 +8,11 @@ An admin tool provides a web service for generating Moodle web service tokens. I
 
 The following maps the plugin version to use depending on your Moodle version.
 
-| Moodle version | Branch    |
-|----------------|-----------|
-| Moodle 3.9 +   | master    |
+| Moodle version   | Branch            |
+|------------------|-------------------|
+| Moodle 4.4 +     | MOODLE_404_STABLE |
+| Moodle 3.9 - 4.1 | master            |
+
 
 
 ## Installation ##
