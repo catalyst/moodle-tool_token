@@ -14,22 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * Privacy Subsystem implementation for tool_token.
- *
- * @package     tool_token
- * @category    string
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace tool_token\privacy;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Privacy Subsystem for tool_task implementing null_provider.
  *
+ * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

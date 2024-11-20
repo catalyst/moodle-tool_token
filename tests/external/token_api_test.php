@@ -14,20 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for token_api class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token\external;
 
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-
-require_once("$CFG->libdir/externallib.php");
-require_once($CFG->dirroot . '/user/profile/lib.php');
+use advanced_testcase;
+use stdClass;
+use external_api;
+use context_system;
 
 /**
  * Tests for token_api class.
@@ -35,8 +27,12 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\external\token_api
+ *
+ * @runTestsInSeparateProcesses
  */
-class tool_token_token_api_testcase extends advanced_testcase {
+class token_api_test extends advanced_testcase {
 
     /**
      * Test  user 1.
@@ -49,6 +45,19 @@ class tool_token_token_api_testcase extends advanced_testcase {
      * @var \stdClass
      */
     protected $user2;
+
+    /**
+     * Set up.
+     *
+     * @return void
+     */
+    public function setUp(): void {
+        global $CFG;
+
+        // Need to include it here. Otherwise it complains about requirement running in separate process.
+        require_once("$CFG->libdir/externallib.php");
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+    }
 
     /**
      * A helper function to create a new service.
@@ -135,7 +144,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => 2,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $this->assertIsArray($token);
@@ -177,7 +186,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token1 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => $this->user1->id,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $expected = $DB->get_record('external_tokens', ['userid' => $this->user1->id, 'externalserviceid' => $serviceid]);
@@ -197,13 +206,13 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token2 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'username',
             'idvalue' => $this->user1->username,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $token3 = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'field1',
             'idvalue' => 'User 1 Field 1',
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $this->assertSame($token1, $token2);
@@ -223,7 +232,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => 777777,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $this->assertIsArray($token);
@@ -253,7 +262,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'field2',
             'idvalue' => 'User 1 Field 2',
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
 
         $this->assertIsArray($token);
@@ -284,7 +293,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => $this->user1->id,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
         $this->assertIsArray($token);
         $this->assertArrayHasKey('error', $token);
@@ -297,7 +306,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => $this->user1->id,
-            'service' => 'Not Existing'
+            'service' => 'Not Existing',
         ]);
         $this->assertIsArray($token);
         $this->assertArrayHasKey('error', $token);
@@ -326,7 +335,7 @@ class tool_token_token_api_testcase extends advanced_testcase {
         $token = external_api::call_external_function('tool_token_get_token', [
             'idtype' => 'id',
             'idvalue' => $this->user1->id,
-            'service' => 'fake WS'
+            'service' => 'fake WS',
         ]);
         $this->assertIsArray($token);
         $this->assertArrayHasKey('error', $token);

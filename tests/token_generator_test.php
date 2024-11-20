@@ -14,19 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for token_generator class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token;
 
-use tool_token\token_generator;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
+use advanced_testcase;
+use stdClass;
+use context_system;
 
 /**
  * Tests for token_generator class.
@@ -34,8 +26,11 @@ global $CFG;
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\token_generator
+ * @runTestsInSeparateProcesses
  */
-class tool_token_token_generator_testcase extends advanced_testcase {
+class token_generator_test extends advanced_testcase {
 
     /**
      * Helper method to mock services_config.
@@ -44,7 +39,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
      */
     protected function build_mocked_servicesconfig() {
         return $this->getMockBuilder('\tool_token\services_config')
-            ->setMethods(['is_service_enabled'])->getMock();
+            ->onlyMethods(['is_service_enabled'])->getMock();
     }
 
     /**
@@ -128,7 +123,7 @@ class tool_token_token_generator_testcase extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
 
         $builder = $this->getMockBuilder('\tool_token\services_config')
-            ->setMethods([
+            ->onlyMethods([
                 'is_service_enabled',
                 'get_service_by_shortname'
             ]);

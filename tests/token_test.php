@@ -14,19 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for token class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token;
 
-defined('MOODLE_INTERNAL') || die();
-
-use tool_token\token;
-
-global $CFG;
+use advanced_testcase;
 
 /**
  * Tests for token class.
@@ -34,8 +24,10 @@ global $CFG;
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\token
  */
-class tool_token_token_testcase extends advanced_testcase {
+class token_test extends advanced_testcase {
 
     /**
      * Test getters methods.
@@ -45,5 +37,4 @@ class tool_token_token_testcase extends advanced_testcase {
         $this->assertSame('test', $token->get_token());
         $this->assertSame(12345, $token->get_validuntil());
     }
-
 }
