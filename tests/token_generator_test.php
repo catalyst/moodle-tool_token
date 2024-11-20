@@ -22,11 +22,12 @@ use context_system;
 
 /**
  * Tests for token_generator class.
- * 
+ *
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
+ * @covers \tool_token\token_generator
  * @runTestsInSeparateProcesses
  */
 class token_generator_test extends advanced_testcase {
@@ -38,7 +39,7 @@ class token_generator_test extends advanced_testcase {
      */
     protected function build_mocked_servicesconfig() {
         return $this->getMockBuilder('\tool_token\services_config')
-            ->setMethods(['is_service_enabled'])->getMock();
+            ->onlyMethods(['is_service_enabled'])->getMock();
     }
 
     /**
@@ -122,7 +123,7 @@ class token_generator_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
 
         $builder = $this->getMockBuilder('\tool_token\services_config')
-            ->setMethods([
+            ->onlyMethods([
                 'is_service_enabled',
                 'get_service_by_shortname'
             ]);

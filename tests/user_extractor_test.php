@@ -25,6 +25,8 @@ use stdClass;
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\user_extractor
  */
 class user_extractor_test extends advanced_testcase {
 
@@ -35,7 +37,7 @@ class user_extractor_test extends advanced_testcase {
      */
     protected function build_mocked_fieldsconfig() {
         return $this->getMockBuilder('\tool_token\fields_config')
-            ->setMethods([
+            ->onlyMethods([
                 'is_field_enabled',
                 'is_custom_profile_field',
                 'get_enabled_auth_methods'

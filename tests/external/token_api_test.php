@@ -28,6 +28,8 @@ use context_system;
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
+ * @covers \tool_token\external\token_api
+ *
  * @runTestsInSeparateProcesses
  */
 class token_api_test extends advanced_testcase {

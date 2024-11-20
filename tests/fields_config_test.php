@@ -25,6 +25,8 @@ use stdClass;
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\fields_config
  */
 class fields_config_test extends advanced_testcase {
 

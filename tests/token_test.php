@@ -24,6 +24,8 @@ use advanced_testcase;
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \tool_token\token
  */
 class token_test extends advanced_testcase {
 
