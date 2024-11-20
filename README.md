@@ -4,6 +4,15 @@
 
 An admin tool provides a web service for generating Moodle web service tokens. It conceptually works the same way as /login/token.php, but via web services. See https://docs.moodle.org/dev/Creating_a_web_service_client#How_to_get_a_user_token
 
+## Branches ##
+
+The following maps the plugin version to use depending on your Moodle version.
+
+| Moodle version | Branch    |
+|----------------|-----------|
+| Moodle 3.9 +   | master    |
+
+
 ## Installation ##
 
 Add the plugin to /admin/tool/token/
