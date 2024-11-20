@@ -35,6 +35,8 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @runTestsInSeparateProcesses 
  */
 class tool_token_token_api_testcase extends advanced_testcase {
 
