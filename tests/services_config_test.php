@@ -14,19 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for services_config class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token;
 
-use tool_token\services_config;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
+use advanced_testcase;
 
 /**
  * Tests for services_config class.
@@ -35,7 +25,7 @@ global $CFG;
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_token_services_config_testcase extends advanced_testcase {
+class services_config_test extends advanced_testcase {
 
     /**
      * Test getting supported services.
@@ -49,15 +39,15 @@ class tool_token_services_config_testcase extends advanced_testcase {
         $this->assertIsArray($servicesconfig->get_supported_services());
 
         foreach ($servicesconfig->get_supported_services() as $shortname => $service) {
-            $this->assertObjectHasAttribute('id', $service);
-            $this->assertObjectHasAttribute('name', $service);
-            $this->assertObjectHasAttribute('enabled', $service);
-            $this->assertObjectHasAttribute('requiredcapability', $service);
-            $this->assertObjectHasAttribute('restrictedusers', $service);
-            $this->assertObjectHasAttribute('component', $service);
-            $this->assertObjectHasAttribute('shortname', $service);
-            $this->assertObjectHasAttribute('downloadfiles', $service);
-            $this->assertObjectHasAttribute('uploadfiles', $service);
+            $this->assertObjectHasProperty('id', $service);
+            $this->assertObjectHasProperty('name', $service);
+            $this->assertObjectHasProperty('enabled', $service);
+            $this->assertObjectHasProperty('requiredcapability', $service);
+            $this->assertObjectHasProperty('restrictedusers', $service);
+            $this->assertObjectHasProperty('component', $service);
+            $this->assertObjectHasProperty('shortname', $service);
+            $this->assertObjectHasProperty('downloadfiles', $service);
+            $this->assertObjectHasProperty('uploadfiles', $service);
             // We support only services that have shortnames.
             $this->assertNotEmpty($service->shortname);
             $this->assertSame($service->shortname, $shortname);

@@ -14,19 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for user_extractor class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token;
 
-use tool_token\user_extractor;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
+use advanced_testcase;
+use stdClass;
 
 /**
  * Tests for user_extractor class.
@@ -35,7 +26,7 @@ global $CFG;
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_token_user_extractor_testcase extends advanced_testcase {
+class user_extractor_test extends advanced_testcase {
 
     /**
      * Helper method to mock fields_config.

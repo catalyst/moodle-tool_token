@@ -14,28 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for token_generator class.
- *
- * @package     tool_token
- * @copyright   2021 Catalyst IT
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_token;
 
-use tool_token\token_generator;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
+use advanced_testcase;
+use stdClass;
+use context_system;
 
 /**
  * Tests for token_generator class.
- *
+ * 
  * @package     tool_token
  * @copyright   2021 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @runTestsInSeparateProcesses
  */
-class tool_token_token_generator_testcase extends advanced_testcase {
+class token_generator_test extends advanced_testcase {
 
     /**
      * Helper method to mock services_config.
